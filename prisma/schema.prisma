@@ -1,0 +1,93 @@
+// prisma/schema.prisma
+datasource db {
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+  // uncomment next line if you use Prisma <5.10
+  // directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  password      String?
+  role          UserRole  @default(USER)
+  accounts      Account[]
+  communities   Community[]
+ 
+  @@map("users")
+}
+
+model verficationToken {
+  id        String   @id @default(cuid())
+  email     String 
+  token     String   @unique
+  expiresAt DateTime
+ 
+ @@unique([email, token])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String 
+  token     String   @unique
+  expiresAt DateTime
+ 
+ @@unique([email, token])
+}
+
+enum MemberRole {
+  MEMBER
+  ELDER
+  CO_LEADER
+  LEADER
+}
+
+model Community {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String
+  logo        String?
+  members     CommunityMember[]
+  createdBy   User        @relation(fields: [creatorId], references: [id])
+  creatorId   String
+}
+
+model CommunityMember {
+  id           String      @id @default(cuid())
+  email        String
+  role         MemberRole  @default(MEMBER)
+  community    Community   @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  communityId  String
+}
