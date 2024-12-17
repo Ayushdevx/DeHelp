@@ -37,7 +37,7 @@ export default function Hero({ onLearnMoreClick }: HeroProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {[
             { icon: Users, title: "10,000+", desc: "SHGs Empowered" },
-            { icon: Wallet, title: "$5M+", desc: "Total Value Locked" },
+            { icon: Wallet, title: "₹5L+", desc: "Total Value Locked" },
             { icon: Shield, title: "100%", desc: "Secure & Transparent" },
           ].map((item, i) => (
             <div key={i} className="text-center">
